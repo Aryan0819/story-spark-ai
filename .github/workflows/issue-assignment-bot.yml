@@ -51,6 +51,65 @@ jobs:
             const postComment = text =>
               github.rest.issues.createComment({ owner, repo, issue_number: issueNumber, body: text });
 
+            // Contributor tiers: new → max 2 open | 5+ merged → max 1 | 10+ merged → no auto-assign
+            const MERGED_VETERAN = 5;
+            const MERGED_BLOCKED = 10;
+
+            const countMergedPRs = async username => {
+              const { data } = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:pr is:merged author:${username}`,
+                per_page: 1
+              });
+              return data.total_count;
+            };
+
+            const countOpenAssignedIssues = async username => {
+              let count = 0;
+              let page = 1;
+              while (true) {
+                const { data } = await github.rest.issues.listForRepo({
+                  owner, repo, state: 'open', assignee: username, per_page: 100, page
+                });
+                count += data.filter(i => !i.pull_request).length;
+                if (data.length < 100) break;
+                page++;
+              }
+              return count;
+            };
+
+            const maxOpenForMergedCount = mergedCount => {
+              if (mergedCount >= MERGED_BLOCKED) return 0;
+              if (mergedCount >= MERGED_VETERAN) return 1;
+              return 2;
+            };
+
+            const evaluateEligibility = async (username, viaCheckbox = false) => {
+              const [mergedCount, openCount] = await Promise.all([
+                countMergedPRs(username),
+                countOpenAssignedIssues(username)
+              ]);
+              const maxOpen = maxOpenForMergedCount(mergedCount);
+              const prefix = viaCheckbox
+                ? `You checked **I want to work on this issue**, but `
+                : '';
+
+              if (maxOpen === 0) {
+                return {
+                  allowed: false,
+                  body: `Hey @${username}, ${prefix}thank you for everything you've contributed here! 🙏\n\nWe couldn't auto-assign this issue right now. Please ask a **maintainer** to assign you if you'd like to work on it, or pick an [open unassigned issue](https://github.com/${owner}/${repo}/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee).\n\nYou can still **open new issues** anytime to report bugs, docs gaps, or ideas.`
+                };
+              }
+
+              if (openCount >= maxOpen) {
+                return {
+                  allowed: false,
+                  body: `Hey @${username}, ${prefix}you already have **${openCount}** open issue(s) assigned. Please finish one or comment \`/unassign\` on an issue you're not working on, then comment \`/assign\` here to claim this one. 🙏`
+                };
+              }
+
+              return { allowed: true, mergedCount, openCount, maxOpen };
+            };
+
             if (currentAssignees.length > 0) {
               await postComment(
                 `Hey @${requester}, thanks for offering to work on this! This issue is already assigned to @${currentAssignees[0]}. Please pick another [unassigned issue](https://github.com/${owner}/${repo}/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee).`
@@ -58,21 +117,9 @@ jobs:
               return;
             }
 
-            let assignedCount = 0;
-            let page = 1;
-            while (true) {
-              const { data } = await github.rest.issues.listForRepo({
-                owner, repo, state: 'open', assignee: requester, per_page: 100, page
-              });
-              assignedCount += data.filter(i => !i.pull_request).length;
-              if (data.length < 100) break;
-              page++;
-            }
-
-            if (assignedCount >= 2) {
-              await postComment(
-                `Hey @${requester}, you checked **I want to work on this issue**, but you already have 2 open issues assigned. Please complete or unassign one, then comment \`/assign\` here to claim this issue. 🙏`
-              );
+            const eligibility = await evaluateEligibility(requester, true);
+            if (!eligibility.allowed) {
+              await postComment(eligibility.body);
               return;
             }
 
@@ -243,22 +290,65 @@ jobs:
               return;
             }
 
-            // Count open issues currently assigned to the commenter
-            let assignedCount = 0;
-            let page = 1;
-            while (true) {
-              const { data } = await github.rest.issues.listForRepo({
-                owner, repo, state: 'open', assignee: commenter, per_page: 100, page
-              });
-              assignedCount += data.filter(i => !i.pull_request).length;
-              if (data.length < 100) break;
-              page++;
-            }
+            // Contributor tiers: new → max 2 open | 5+ merged → max 1 | 10+ merged → no auto-assign
+            const MERGED_VETERAN = 5;
+            const MERGED_BLOCKED = 10;
 
-            if (assignedCount >= 2) {
-              await postComment(
-                `Hey @${commenter}, you already have 2 issues assigned to you. Please complete or unassign one before picking up more. 🙏`
-              );
+            const countMergedPRs = async username => {
+              const { data } = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:pr is:merged author:${username}`,
+                per_page: 1
+              });
+              return data.total_count;
+            };
+
+            const countOpenAssignedIssues = async username => {
+              let count = 0;
+              let page = 1;
+              while (true) {
+                const { data } = await github.rest.issues.listForRepo({
+                  owner, repo, state: 'open', assignee: username, per_page: 100, page
+                });
+                count += data.filter(i => !i.pull_request).length;
+                if (data.length < 100) break;
+                page++;
+              }
+              return count;
+            };
+
+            const maxOpenForMergedCount = mergedCount => {
+              if (mergedCount >= MERGED_BLOCKED) return 0;
+              if (mergedCount >= MERGED_VETERAN) return 1;
+              return 2;
+            };
+
+            const evaluateEligibility = async username => {
+              const [mergedCount, openCount] = await Promise.all([
+                countMergedPRs(username),
+                countOpenAssignedIssues(username)
+              ]);
+              const maxOpen = maxOpenForMergedCount(mergedCount);
+
+              if (maxOpen === 0) {
+                return {
+                  allowed: false,
+                  body: `Hey @${username}, thank you for everything you've contributed to this project! 🙏\n\nWe couldn't auto-assign this issue right now. Please ask a **maintainer** to assign you if you'd like to work on it, or browse [open unassigned issues](https://github.com/${owner}/${repo}/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee).\n\nYou can still **open new issues** anytime to report bugs, docs gaps, or ideas.`
+                };
+              }
+
+              if (openCount >= maxOpen) {
+                return {
+                  allowed: false,
+                  body: `Hey @${username}, you already have **${openCount}** open issue(s) assigned. Please finish one or comment \`/unassign\` on an issue you're not working on, then comment \`/assign\` here to claim this one. 🙏`
+                };
+              }
+
+              return { allowed: true, mergedCount, openCount, maxOpen };
+            };
+
+            const eligibility = await evaluateEligibility(commenter);
+            if (!eligibility.allowed) {
+              await postComment(eligibility.body);
               return;
             }
 
