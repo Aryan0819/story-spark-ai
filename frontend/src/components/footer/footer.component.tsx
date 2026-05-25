@@ -48,7 +48,7 @@ if (!email || !emailRegex.test(email)) {
 
   const resourceLinks = [
     { label: "Blog",        to: "/blog"       },
-    { label: "Help Center", to: "/help"       },
+    { label: "Help Center", to: "/help-center" },
     { label: "Community",   to: "/community"  },
     { label: "Guidelines",  to: "/guidelines" },
   ];
@@ -224,7 +224,7 @@ if (!email || !emailRegex.test(email)) {
           </div>
           <div className="flex items-center gap-2.5">
             {[
-              { label: "Privacy", path: "/privacy-policy" },
+              { label: "Privacy Policy", path: "/privacy-policy" },
               { label: "Terms", path: "/terms" },
               { label: "Cookies", path: "/privacy-policy" },
             ].map((item, i, arr) => (
