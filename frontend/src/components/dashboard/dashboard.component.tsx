@@ -4,8 +4,6 @@ import SubscriptionChart from "../chart/dashboard/doughnut_chart";
 import PostsPerMonthChart from "../chart/dashboard/line_chart";
 import UsersPieChart from "../chart/dashboard/pai_chart";
 import LoadingAnimation from "../loading/loading.component";
-import DashboardAnalysisHeader from "./dashboard_analysis_header";
-
 
 const DashboardComponent = () => {
   const { data, isLoading } = useGetDashboardAnalysisQuery(undefined);
