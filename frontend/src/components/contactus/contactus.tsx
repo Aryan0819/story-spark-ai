@@ -70,6 +70,8 @@ export default function Contact() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ): void => {
     const fieldName = e.target.name as SupportFormField;
+    // Clear any existing validation error as the user edits
+    if (error) setError("");
 
     setFormData((prev) => ({
       ...prev,
