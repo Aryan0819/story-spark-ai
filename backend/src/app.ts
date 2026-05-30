@@ -40,8 +40,8 @@ app.use(
   })
 );
 app.use("/review", storyRoutes);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Keeps your extended payload parsing enabled
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" })); // Keeps your extended payload parsing enabled
 app.use(cookieParser());
 
 // Routes
@@ -49,19 +49,11 @@ app.use("/api/v1", Routers);
 
 // Global 404 Fallback Handler
 app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(httpStatus.NOT_FOUND).json({
-    success: false,
-    message: "Not Found",
-    errorMessage: [
-      {
-        path: req.originalUrl,
-        message: "API Not Found",
-      },
-    ],
-  });
+  const error: any = new Error("API Not Found");
+  error.statusCode = 404;
+  next(error);
 });
 
-app.use(globalErrorHandler);
 
 // Cron job to reset request counts at the beginning of each month (skip on Vercel serverless)
 if (!process.env.VERCEL) {
@@ -73,5 +65,6 @@ if (!process.env.VERCEL) {
     }
   });
 }
+app.use(globalErrorHandler);
 
 export default app;
