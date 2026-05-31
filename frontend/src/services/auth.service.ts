@@ -23,6 +23,7 @@ type AuthUserInfo = {
   subscriptionType: string;
   exp: number;
   iat: number;
+  avatar?: string;
 };
 
 const buildUserInfo = (decodedData: any): AuthUserInfo => ({
