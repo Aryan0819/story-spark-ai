@@ -28,13 +28,13 @@ export const UserSchema: Schema<IUser> = new Schema<IUser, UserModel>(
       default: USER_STATUS.ACTIVE,
     },
     profile: {
-      avatar: { type: String, default: "" },
-      bio: { type: String, default: "" },
+      avatar: { type: String, default: "", maxlength: 2000 },
+      bio: { type: String, default: "", maxlength: 1000 },
       social: {
-        facebook: { type: String, default: "" },
-        twitter: { type: String, default: "" },
-        linkedin: { type: String, default: "" },
-        instagram: { type: String, default: "" },
+        facebook: { type: String, default: "", maxlength: 200 },
+        twitter: { type: String, default: "", maxlength: 200 },
+        linkedin: { type: String, default: "", maxlength: 200 },
+        instagram: { type: String, default: "", maxlength: 200 },
       },
     },
     subscriptionType: {
