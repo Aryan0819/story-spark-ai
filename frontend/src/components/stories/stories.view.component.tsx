@@ -25,6 +25,7 @@ import {
   useGenerateAlternateEndingsMutation,
   useGenerateFreeAlternateEndingsMutation,
 } from "../../redux/apis/ai.model.api";
+import { useUpdatePostMutation } from "../../redux/apis/post.api";
 
 // ─── StoryCoverImage ────────────────────────────────────────────────────────
 
@@ -250,6 +251,7 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
   const [showRemix, setShowRemix] = useState<boolean>(false);
   const [showTranslator, setShowTranslator] = useState<boolean>(false);
   const [createPost] = useCreatePostMutation();
+  const [updatePost] = useUpdatePostMutation();
   const [deletePost] = useDeletePostMutation();
   const { data: profile } = useGetProfileInfoQuery(undefined, { skip: !isLogin });
   const lastSavedContentRef = useRef<string>("");
@@ -351,19 +353,42 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
   }, [stories, dispatch]);
 
   useEffect(() => {
+    if (!selectedStory?.uuid) return;
+    try {
+      const storedDraftId = sessionStorage.getItem(`story_spark_autosave_draft_id:${selectedStory.uuid}`);
+      if (storedDraftId) savedPostIdRef.current = storedDraftId;
+    } catch (error) {
+      console.warn("Failed to read autosave draft id from sessionStorage", error);
+    }
+  }, [selectedStory?.uuid]);
+
+  useEffect(() => {
     const autoSaveStory = async () => {
       if (!isLogin || !selectedStory) return;
       if (selectedStory.content === lastSavedContentRef.current) return;
-      if (hasSavedSessionRef.current) return;
       if (isSavingRef.current) return;
       isSavingRef.current = true;
       const post: IPost = { ...selectedStory, topic: selectTopics, isPublished: false };
       try {
-        const result = await createPost(post).unwrap();
-        if (result && result.data && result.data._id) savedPostIdRef.current = result.data._id;
+        if (savedPostIdRef.current) {
+          await updatePost({ id: savedPostIdRef.current, data: post as unknown as Record<string, unknown> }).unwrap();
+        } else {
+          const result = await createPost(post).unwrap();
+          const createdId = result?.data?._id;
+          if (createdId) {
+            savedPostIdRef.current = createdId;
+            try {
+              sessionStorage.setItem(`story_spark_autosave_draft_id:${selectedStory.uuid}`, createdId);
+            } catch (storageError) {
+              console.warn("Failed to persist autosave draft id to sessionStorage", storageError);
+            }
+          }
+        }
         lastSavedContentRef.current = selectedStory.content;
-        hasSavedSessionRef.current = true;
-        toast.success("Story auto-saved!");
+        if (!hasSavedSessionRef.current) {
+          hasSavedSessionRef.current = true;
+          toast.success("Story auto-saved!");
+        }
       } catch (error) {
         console.error("Auto-save failed", error);
       } finally {
@@ -372,7 +397,7 @@ const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
     };
     const timer = setTimeout(() => { autoSaveStory(); }, 1000);
     return () => clearTimeout(timer);
-  }, [selectedStory, selectedStory?.content, isLogin, selectTopics, createPost]);
+  }, [selectedStory, selectedStory?.content, isLogin, selectTopics, createPost, updatePost]);
 
   const handelStorySelection = (story: IStories) => { setSelectedStory(story); };
 
