@@ -25,10 +25,7 @@ const limiter = rateLimit({
   max: 100,
   message: "Too many requests, please try again later.",
 });
-
-app.use(limiter as any);
-
-
+app.use(limiter as unknown as RequestHandler);
 
 const defaultCorsOrigins = [
   "http://localhost:4001",

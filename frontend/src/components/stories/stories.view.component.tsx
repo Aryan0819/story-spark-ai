@@ -216,8 +216,7 @@ interface StoriesComponentProps {
 }
 
 interface IRelatedStoriesComponentProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  posts: any[];
+  posts: { _id: string; title: string; [key: string]: unknown }[];
   currentPostId: string;
 }
 
@@ -335,8 +334,13 @@ const createDocxBlob = ({
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const StoryRemixModal = StoryRemix as React.ComponentType<any>;
+const StoryRemixModal = StoryRemix as unknown as React.ComponentType<{
+  story?: string;
+  title?: string;
+  selectedStory?: IStories;
+  onClose?: () => void;
+  onApplyRemix?: (content: string) => void;
+}>;
 
 const StoryWorldMapModal = StoryWorldMap as React.ComponentType<{
   story?: string;
@@ -978,9 +982,60 @@ const [, setShowRemix] = useState<boolean>(false);
   };
 
   const handleRemoveTopic = (index: number) => {
+    setTopics((currentTopics) =>
+      currentTopics.filter((_, topicIndex) => topicIndex !== index)
+    );
+  };
+  const handleCopyStory = async () => {
+    if (!selectedStory?.content) return;
 
-    if (topics.length <= 2) { toast.error("At least 2 topics are required."); return; }
-    setTopics((currentTopics) => currentTopics.filter((_, topicIndex) => topicIndex !== index));
+    await navigator.clipboard.writeText(selectedStory.content);
+    setIsCopied(true);
+    toast.success("Story copied!");
+    window.setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleGenerateAlternateEndings = async () => {
+    if (!selectedStory) return;
+
+    clearError();
+    setIsGeneratingEndings(true);
+    const toastId = toast.loading("Generating alternate endings...");
+
+    try {
+      const payload = {
+        title: selectedStory.title,
+        content: originalStoryContent[selectedStory.uuid] || selectedStory.content,
+        tag: selectedStory.tag,
+        language: selectedStory.language || "English",
+      };
+
+      const generationRequest = isLogin
+        ? generateAlternateEndings(payload)
+        : generateFreeAlternateEndings(payload);
+
+      const res = await generationRequest.unwrap();
+
+      if (!res || !Array.isArray(res.data)) {
+        throw new Error("Unexpected response format from the AI service.");
+      }
+
+      setEndingsCache((prev) => ({ ...prev, [selectedStory.uuid]: res.data }));
+      toast.success("Alternate endings generated successfully!");
+    } catch (err: unknown) {
+      console.error("[StoriesView Alternate Ending Flow Failure]:", err);
+      const errObj = err as Record<string, unknown>;
+      const errorStatus = (errObj?.status as number | undefined) || ((errObj?.data as Record<string, unknown>)?.status as number | undefined);
+      setError(
+        errorStatus
+          ? getErrorMessage(new ApiError(errorStatus, ((errObj?.data as Record<string, unknown>)?.message as string) || ""))
+          : getErrorMessage(err)
+      );
+      toast.error("Failed to generate alternate endings.");
+    } finally {
+      toast.dismiss(toastId);
+      setIsGeneratingEndings(false);
+    }
   };
 
 

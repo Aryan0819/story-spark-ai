@@ -682,13 +682,13 @@ useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
 
     try {
-      // 60-second client-side request timeout safeguard
+      // 55-second client-side request timeout safeguard (before Axios 60s timeout)
       timeoutId = setTimeout(() => {
         if (isGenerationInProgressRef.current) {
           toast.error("Story generation timed out. Please try again.");
           handleCancelGeneration(true);
         }
-      }, 60000);
+      }, 55000);
 
       const payload = {
 
