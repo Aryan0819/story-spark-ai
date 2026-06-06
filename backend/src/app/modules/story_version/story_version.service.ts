@@ -1,13 +1,14 @@
-import { enhancePromptWithGemini } from "./enhance_prompt.utils";
-import { raceGenerationWithTimeout, GenerationTimeoutError } from "../../../utils/generation_timeout";
-import ApiError from "../../../errors/api_error";
-import httpStatus from "http-status";
 import httpStatus from "http-status";
 import ApiError from "../../../errors/api_error";
 import { Post } from "../post/post.model";
 import { StoryVersion } from "./story_version.model";
 import { IStoryVersion } from "./story_version.interface";
 import { IPost } from "../post/post.interface";
+import { enhancePromptWithGemini } from "./enhance_prompt.utils";
+import {
+  raceGenerationWithTimeout,
+  GenerationTimeoutError,
+} from "../../../utils/generation_timeout";
 
 const createVersionSnapshot = async (
   storyId: string,
@@ -69,7 +70,10 @@ const getVersionsByStoryId = async (
 
   // Enforce access control - users can only view their own stories
   if (post.author.toString() !== userId) {
-    throw new ApiError(httpStatus.FORBIDDEN, "You do not have access to this story history!");
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You do not have access to this story history!"
+    );
   }
 
   return await StoryVersion.find({ storyId }).sort({ versionNumber: -1 });
@@ -81,13 +85,19 @@ const getVersionById = async (
 ): Promise<IStoryVersion> => {
   const version = await StoryVersion.findById(versionId);
   if (!version) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Story version snapshot not found!");
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      "Story version snapshot not found!"
+    );
   }
 
   // Fetch the post to verify ownership
   const post = await Post.findById(version.storyId);
   if (!post || post.author.toString() !== userId) {
-    throw new ApiError(httpStatus.FORBIDDEN, "You do not have access to this story version!");
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You do not have access to this story version!"
+    );
   }
 
   return version;
@@ -99,7 +109,10 @@ const restoreVersion = async (
 ): Promise<IPost> => {
   const version = await StoryVersion.findById(versionId);
   if (!version) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Story version snapshot not found!");
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      "Story version snapshot not found!"
+    );
   }
 
   const post = await Post.findById(version.storyId);
@@ -109,7 +122,10 @@ const restoreVersion = async (
 
   // Access check
   if (post.author.toString() !== userId) {
-    throw new ApiError(httpStatus.FORBIDDEN, "You do not have permission to restore this story!");
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You do not have permission to restore this story!"
+    );
   }
 
   // 1. Create a version snapshot of the CURRENT active post content so we preserve it (avoiding data loss)
@@ -136,7 +152,7 @@ const restoreVersion = async (
   return post;
 };
 
-export const StoryVersionService = {const ENHANCE_TIMEOUT_MS = 60000;
+const ENHANCE_TIMEOUT_MS = 60000;
 
 const enhancePrompt = async (prompt: string): Promise<string> => {
   try {
@@ -170,6 +186,8 @@ const enhancePrompt = async (prompt: string): Promise<string> => {
     );
   }
 };
+
+export const StoryVersionService = {
   createVersionSnapshot,
   getVersionsByStoryId,
   getVersionById,

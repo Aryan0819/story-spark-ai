@@ -38,13 +38,12 @@ const getPasswordError = (password: string) => {
   if (!/[^A-Za-z0-9]/.test(password)) {
     return "Password must contain at least one special character";
   }
-
   return "";
 };
 
 type StrengthLevel = "weak" | "medium" | "strong";
 
-const PASSWORD_STRENGTH_CONFIG: Record<
+const PASSWORD_STRENGTH_CONFIG: Record
   StrengthLevel,
   { label: string; barColor: string; barWidth: string; textColor: string }
 > = {
@@ -119,9 +118,7 @@ const SignUpComponent = () => {
     special: /[^A-Za-z0-9]/.test(password || ""),
   };
 
-  const passedChecks =
-    Object.values(passwordChecks).filter(Boolean).length;
-
+  const passedChecks = Object.values(passwordChecks).filter(Boolean).length;
   const strengthLevel = getStrengthLevel(passedChecks);
   const { label: strengthLabel, barColor, barWidth, textColor } =
     PASSWORD_STRENGTH_CONFIG[strengthLevel];
@@ -247,7 +244,6 @@ const SignUpComponent = () => {
   return (
     <div className="min-h-[calc(100dvh-4.5rem)] bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex items-center justify-center relative overflow-hidden px-4 py-8">
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
-
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="flex w-full max-w-md flex-col justify-center py-12 relative z-10">
@@ -293,10 +289,10 @@ const SignUpComponent = () => {
                 autoComplete="name"
                 validation={{
                   required: "Name is required",
-                minLength: {
-                value: 2,
-                message: "Name must be at least 2 characters",
-                },
+                  minLength: {
+                    value: 2,
+                    message: "Name must be at least 2 characters",
+                  },
                   pattern: {
                     value: /^[A-Za-z0-9\s._]+$/,
                     message:
@@ -331,44 +327,44 @@ const SignUpComponent = () => {
               />
 
               {password?.length > 0 && (
-              <div className="space-y-3 -mt-2">
-                <div
-                  className="w-full h-2 bg-slate-700 rounded-full overflow-hidden"
-                  role="progressbar"
-                  aria-valuenow={passedChecks}
-                  aria-valuemin={0}
-                  aria-valuemax={PASSWORD_REQUIREMENTS.length}
-                  aria-label="Password strength"
-                >
+                <div className="space-y-3 -mt-2">
                   <div
-                    className={`h-full transition-all duration-300 ${barColor} ${barWidth}`}
-                  ></div>
+                    className="w-full h-2 bg-slate-700 rounded-full overflow-hidden"
+                    role="progressbar"
+                    aria-valuenow={passedChecks}
+                    aria-valuemin={0}
+                    aria-valuemax={PASSWORD_REQUIREMENTS.length}
+                    aria-label="Password strength"
+                  >
+                    <div
+                      className={`h-full transition-all duration-300 ${barColor} ${barWidth}`}
+                    ></div>
+                  </div>
+
+                  <p
+                    className={`text-sm font-medium ${textColor}`}
+                    aria-live="polite"
+                  >
+                    {strengthLabel} Password
+                  </p>
+
+                  <ul className="space-y-1 text-xs">
+                    {PASSWORD_REQUIREMENTS.map(({ key, label }) => {
+                      const met = passwordChecks[key];
+                      return (
+                        <li
+                          key={key}
+                          className={met ? "text-green-400" : "text-red-400"}
+                          aria-label={`${label}: ${met ? "met" : "not met"}`}
+                        >
+                          <span aria-hidden="true">{met ? "✅" : "❌"}</span>{" "}
+                          {label}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
-
-                <p
-                  className={`text-sm font-medium ${textColor}`}
-                  aria-live="polite"
-                >
-                  {strengthLabel} Password
-                </p>
-
-                <ul className="space-y-1 text-xs">
-                  {PASSWORD_REQUIREMENTS.map(({ key, label }) => {
-                    const met = passwordChecks[key];
-                    return (
-                      <li
-                        key={key}
-                        className={met ? "text-green-400" : "text-red-400"}
-                        aria-label={`${label}: ${met ? "met" : "not met"}`}
-                      >
-                        <span aria-hidden="true">{met ? "✅" : "❌"}</span>{" "}
-                        {label}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-)}
+              )}
 
               <SSInput
                 label="Confirm Password"
@@ -385,7 +381,14 @@ const SignUpComponent = () => {
               <SSButton text="Sign Up" type="submit" isLoading={isBusy} />
             </form>
           ) : (
-            <div className="space-y-5">
+            // ✅ FIX: Wrapped OTP section in <form> so Enter key triggers submission
+            <form
+              className="space-y-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleOtpValidation();
+              }}
+            >
               <SSInput
                 label="OTP"
                 name="otp"
@@ -411,13 +414,14 @@ const SignUpComponent = () => {
                 error={errors.otp}
               />
 
+              {/* ✅ FIX: Changed type from "button" to "submit" */}
               <SSButton
                 text="Verify OTP"
-                type="button"
-                onClick={handleOtpValidation}
+                type="submit"
                 isLoading={isBusy}
               />
 
+              {/* Resend button stays outside form submit flow */}
               <div className="text-center mt-2">
                 <button
                   type="button"
@@ -428,13 +432,13 @@ const SignUpComponent = () => {
                   {cooldown > 0 ? `Resend OTP (${cooldown}s)` : "Resend OTP"}
                 </button>
               </div>
-            </div>
+            </form>
           )}
 
           {!showOtpField && (
             <p className="mt-8 text-center text-sm text-slate-400">
               Already have an account?{" "}
-              <a
+              
                 href="/login"
                 className="font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
               >
