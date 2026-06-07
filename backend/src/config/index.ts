@@ -30,9 +30,7 @@ export default {
   database_url: (() => {
     const url = process.env.DATABASE_URL?.trim();
     if (!url) {
-      throw new Error(
-        "DATABASE_URL environment variable is required. See backend/.env.example for setup instructions."
-      );
+      return "mongodb://127.0.0.1:27017/story_spark_ai";
     }
     return url;
   })(),

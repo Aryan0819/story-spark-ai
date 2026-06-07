@@ -421,17 +421,17 @@ if (!postExists) {
       message: "Bookmark removed",
       bookmarked: false,
     };
-  } else {
-    await Post.updateOne(
-      { _id: postId },
-      { $addToSet: { bookmarks: user._id } }
-    );
-
-    return {
-      message: "Bookmark added",
-      bookmarked: true,
-    };
   }
+
+  await Post.updateOne(
+    { _id: postId },
+    { $addToSet: { bookmarks: user._id } }
+  );
+
+  return {
+    message: "Bookmark added",
+    bookmarked: true,
+  };
 };
 
 const updatePost = async (

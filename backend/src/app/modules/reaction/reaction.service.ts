@@ -21,6 +21,9 @@ const toggleReaction = async (
   }
 
   const post = await Post.findOne({
+  _id: postId,
+  isDeleted: { $ne: true },
+}).select("likesCount reactions");
     _id: postId,
     isDeleted: { $ne: true },
   }).select("likesCount reactions");

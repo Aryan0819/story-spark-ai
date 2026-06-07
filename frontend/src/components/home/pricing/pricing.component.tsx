@@ -38,6 +38,8 @@ const plans: Plan[] = [
       "Single-user workspace",
     ],
     linkTo: "/signup",
+    buttonLabel: "Get Started",
+    highlight: false,
     buttonLabel: "Start Free",
   },
   {
@@ -82,6 +84,7 @@ const plans: Plan[] = [
     ],
     linkTo: "/contact-us",
     buttonLabel: "Contact Sales",
+    highlight: false,
   },
 ];
 
