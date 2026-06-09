@@ -1075,6 +1075,10 @@ html.dark .contact-input::placeholder { color: rgba(148, 163, 184, 0.78); }
 /* Submitting State Custom Transitions */
 .contact-submit-btn {
   transform: translateZ(0);
+
+/* Submitting State Custom Transitions */
+.contact-submit-btn {
+  transform: translateZ(0);
   will-change: transform, box-shadow;
   transition: transform 180ms ease, box-shadow 220ms ease, opacity 180ms ease, filter 200ms ease;
 }
@@ -1172,6 +1176,51 @@ html.dark .contact-input::placeholder { color: rgba(148, 163, 184, 0.78); }
     width: 42px;
     height: 42px;
     font-size: 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .motion-card,
+  .motion-card:hover,
+  .motion-card-subtle,
+  .motion-card-subtle:hover,
+  .motion-cta,
+  .motion-cta:hover,
+  .motion-cta:active,
+  .group:hover .motion-image,
+  .magic-cursor-dot,
+  .magic-cursor-glow,
+  .magic-cursor-sparkle,
+  .contact-col-left,
+  .contact-col-right,
+  .contact-badge {
+    transform: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  
+  .magic-cursor-sparkle,
+  .magic-cursor-dot,
+  .magic-cursor-glow,
+  .contact-form-glow-ring {
+    display: none !important;
+  }
+
+  .contact-heading-gradient,
+  .contact-accent-bar,
+  .contact-btn-gradient {
+    animation: none !important;
+  }
+}
   }
 }
 
@@ -1384,6 +1433,28 @@ html.dark .contact-input::placeholder { color: rgba(148, 163, 184, 0.78); }
   background-size: 200% 200%;
   animation: border-gradient 4s ease infinite;
   transition: filter 200ms ease;
+}
+
+.contact-submit-btn:not(:disabled):hover {
+  transform: translate3d(0, -2px, 0) scale(1.005);
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.35),
+    0 10px 36px rgba(99, 102, 241, 0.40),
+    0 0 56px rgba(139, 92, 246, 0.18);
+}
+
+.contact-submit-btn:not(:disabled):hover .contact-btn-gradient {
+  filter: brightness(1.1);
+}
+
+.contact-submit-btn:not(:disabled):active {
+  transform: translate3d(0, 0, 0) scale(0.98);
+}
+
+.contact-submit-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .contact-submit-btn:not(:disabled):hover {
