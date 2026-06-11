@@ -764,6 +764,7 @@ html.dark .contact-section {
 .contact-bg-mesh {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background:
     radial-gradient(ellipse 90% 55% at 15% 5%, rgba(59, 130, 246, 0.14), transparent),
     radial-gradient(ellipse 70% 50% at 85% 95%, rgba(168, 85, 247, 0.12), transparent),
@@ -780,6 +781,7 @@ html.dark .contact-bg-mesh {
 
 .contact-orb {
   position: absolute;
+  z-index: 0;
   border-radius: 9999px;
   pointer-events: none;
   filter: blur(90px);
@@ -814,6 +816,7 @@ html.dark .contact-bg-mesh {
 .contact-grid-overlay {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background-image:
     linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
@@ -829,8 +832,17 @@ html.dark .contact-grid-overlay {
     linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
 }
 
-.contact-col-left { animation: fade-in 0.6s ease-out both; }
-.contact-col-right { animation: fade-in 0.6s 0.18s ease-out both; }
+.contact-col-left {
+  position: relative;
+  z-index: 10;
+  animation: fade-in 0.6s ease-out both;
+}
+
+.contact-col-right {
+  position: relative;
+  z-index: 10;
+  animation: fade-in 0.6s 0.18s ease-out both;
+}
 .contact-badge { animation: fade-in 0.5s ease-out both; }
 
 .contact-heading-gradient {
@@ -932,7 +944,7 @@ html.dark .contact-channel-link:hover {
   position: relative;
   border-radius: 1.5rem;
   border: 1px solid rgba(148, 163, 184, 0.28);
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(22px) saturate(155%);
   -webkit-backdrop-filter: blur(22px) saturate(155%);
   padding: 2rem;
@@ -945,7 +957,7 @@ html.dark .contact-channel-link:hover {
 
 html.dark .contact-form-card {
   border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(11, 17, 32, 0.74);
+  background: rgba(11, 17, 32, 0.9);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
     0 32px 80px rgba(0, 0, 0, 0.55),
@@ -1354,4 +1366,3 @@ html.dark .contact-input::placeholder { color: rgba(148, 163, 184, 0.78); }
   cursor: not-allowed;
   transform: none;
 }
-

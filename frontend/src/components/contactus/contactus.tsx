@@ -350,7 +350,7 @@ export default function Contact() {
       ref={sectionRef}
       id="contact"
       aria-labelledby="contact-heading"
-      className="contact-section relative overflow-hidden bg-[#020617] text-white"
+      className="contact-section relative isolate overflow-hidden bg-[#020617] text-white"
     >
       {/* ΓöÇΓöÇ Layered background ΓöÇΓöÇ */}
       <div aria-hidden="true" className="contact-bg-mesh" />
@@ -480,10 +480,10 @@ export default function Contact() {
 
           {/* ΓöÇΓöÇ RIGHT COLUMN ΓÇö FORM ΓöÇΓöÇ */}
           <div
-            className={`contact-col-right w-full lg:sticky lg:top-24 transition-all duration-700 delay-150 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            className={`contact-col-right relative z-10 w-full lg:sticky lg:top-24 transition-all duration-700 delay-150 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
           >
-            <div className="contact-form-shell">
+            <div className="contact-form-shell overflow-hidden">
               <div aria-hidden="true" className="contact-form-glow-ring" />
 
               <div className="contact-form-card">
