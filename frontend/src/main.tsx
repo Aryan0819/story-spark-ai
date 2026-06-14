@@ -10,11 +10,10 @@ import "./index.css";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+const googleClientId = GOOGLE_CLIENT_ID || "";
 
 if (!GOOGLE_CLIENT_ID) {
-  console.warn("VITE_GOOGLE_CLIENT_ID is missing. Google Login will not function.");
+  console.warn("VITE_GOOGLE_CLIENT_ID is missing. Google Login disabled.");
 }
 
 const container = document.getElementById("root");
@@ -25,20 +24,13 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    {GOOGLE_CLIENT_ID ? (
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <Provider store={store}>
-          <ThemeProvider>
-            <App />
-          </ThemeProvider>
-        </Provider>
-      </GoogleOAuthProvider>
-    ) : (
+    <GoogleOAuthProvider clientId={googleClientId}>
       <Provider store={store}>
         <ThemeProvider>
           <App />
         </ThemeProvider>
       </Provider>
-    )}
+    </GoogleOAuthProvider>
   </StrictMode>
 );
+
