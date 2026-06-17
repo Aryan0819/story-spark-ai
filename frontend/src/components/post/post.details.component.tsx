@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { StoryMetaTags } from "./StoryMetaTags";
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -109,7 +110,6 @@ const PostDetailsComponent = () => {
   return () => window.removeEventListener("scroll", updateProgress);
   }, []);
 
-  // New Version Timeline and Editor States
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
@@ -282,12 +282,22 @@ const PostDetailsComponent = () => {
       toast.error("Unable to remove this story. Please try again.");
     }
   };
+
   if (isLoading) {
     return <LoadingAnimation />;
   }
 
   return (
     <div className="min-h-screen bg-white text-slate-900 transition-colors duration-300 dark:bg-[#0b1329] dark:text-white relative">
+
+      {/* OG Meta Tags for social sharing */}
+      <StoryMetaTags
+        title={post?.title}
+        content={post?.content}
+        imageURL={post?.imageURL}
+        postId={id}
+      />
+
       {/* Reading Progress Bar */}
       <div
         className="fixed top-0 left-0 z-50 h-1 bg-indigo-500 transition-all duration-100"
@@ -545,7 +555,6 @@ const PostDetailsComponent = () => {
         </div>
       </div>
 
-      {/* Dynamic Slide-in Sliding Timeline Drawer Panel */}
       {showTimeline && (
         <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[#0f172a]/95 backdrop-blur-xl border-l border-slate-700/60 shadow-2xl p-6 overflow-y-auto text-white animate-slide-in flex flex-col">
           <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
@@ -596,7 +605,6 @@ const PostDetailsComponent = () => {
 
                   return (
                     <div key={v._id} className="relative group">
-                      {/* Chronological marker dot */}
                       <div className="absolute left-[-21px] top-1.5 w-3.5 h-3.5 rounded-full bg-indigo-500 border-4 border-[#0f172a] group-hover:scale-125 transition-transform duration-200"></div>
                       <div className="bg-slate-900/55 border border-slate-800/80 rounded-xl p-4 hover:border-slate-700/80 transition-all duration-200">
                         <div className="flex justify-between items-start mb-2 gap-2">
@@ -618,9 +626,7 @@ const PostDetailsComponent = () => {
                             </button>
 
                             <button
-                              onClick={() =>
-                                handleCreateBranch(v._id)
-                              }
+                              onClick={() => handleCreateBranch(v._id)}
                               className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] rounded transition-all"
                             >
                               Branch
@@ -697,9 +703,7 @@ const PostDetailsComponent = () => {
 
                     {node.branchName && (
                       <div className="text-purple-400 text-sm">
-                        Branch:
-                        {" "}
-                        {node.branchName}
+                        Branch: {node.branchName}
                       </div>
                     )}
                   </div>
@@ -716,4 +720,3 @@ const PostDetailsComponent = () => {
 };
 
 export default PostDetailsComponent;
-

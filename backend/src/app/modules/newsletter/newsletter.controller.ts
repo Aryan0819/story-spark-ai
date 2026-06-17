@@ -10,7 +10,6 @@ export const subscribe = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Valid email is required." });
     }
 
-    // Extract logged-in user id from JWT token if available
     const userId = (req as any).user?.id;
 
     // Origin of the API request, used to build the unsubscribe link in the email.
@@ -61,12 +60,14 @@ export const unsubscribeByToken = async (req: Request, res: Response) => {
 
     const result = await newsletterService.unsubscribeByToken(safeToken as string);
 
-    res.status(200).json({
+    res.status(httpStatus.OK).json({
       success: true,
       message: "Successfully unsubscribed",
       data: result,
     });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    res.status(400).json({
+      message: err.message,
+    });
   }
 };
