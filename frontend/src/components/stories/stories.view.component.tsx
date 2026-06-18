@@ -1465,6 +1465,10 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
               <h3 className="text-xl font-bold text-slate-200 relative z-10">
                 Generated Story
               </h3>
+              <div className="flex flex-wrap items-center gap-2 relative z-10 w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="flex-1 sm:flex-initial text-center whitespace-nowrap rounded-lg px-4 py-2 bg-slate-700 text-slate-200 font-semibold cursor-pointer hover:bg-slate-600 transition-colors"
               <div className="flex flex-wrap items-center gap-2 relative z-10">
                 <button
                   type="button"
@@ -1476,6 +1480,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 </button>
                 <button
                   type="button"
+                  className="flex-1 sm:flex-initial text-center whitespace-nowrap rounded-lg px-4 py-2 bg-purple-700 text-slate-200 font-semibold cursor-pointer hover:bg-purple-600 transition-colors"
                   className="rounded-lg px-4 py-2 bg-purple-700 text-slate-200 font-semibold cursor-pointer hover:bg-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleExportPDF}
                   disabled={!selectedStory}
@@ -1492,6 +1497,8 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                 </button>
                 <button
                   type="button"
+                  className={`flex-1 sm:flex-initial justify-center text-center whitespace-nowrap rounded-lg px-5 py-2 font-semibold flex items-center space-x-2 cursor-pointer bg-blue-600 text-white transition-all duration-200 ${
+                    loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500 hover:shadow-lg active:scale-95"
                   className="rounded-lg px-4 py-2 bg-violet-700 text-slate-200 font-semibold cursor-pointer hover:bg-violet-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={() => setShowWorldMap(true)}
                   disabled={!selectedStory}
