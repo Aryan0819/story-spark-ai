@@ -227,7 +227,7 @@ const LoginComponent = () => {
               </div>
             </div>
 
-            <div className="flex justify-center w-full overflow-hidden">
+            <div className="flex justify-center w-full  max-w-full overflow-x-hidden">
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
                 onError={handleGoogleLoginError}
